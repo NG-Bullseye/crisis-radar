@@ -50,6 +50,7 @@ A single day above `+30` is noise. The **rotation signal** fires only when the t
 | [`docs/scoring-spec.md`](docs/scoring-spec.md) | The exact scoring model — every indicator, rule, threshold, clamp |
 | [`docs/data-model.md`](docs/data-model.md) | Domain entities, ER diagram, JSON Schema for the daily report |
 | [`docs/research-pipeline.md`](docs/research-pipeline.md) | How LLM research + structured extraction + citations work; source registry |
+| [`docs/integrations/mcp-news-and-display.md`](docs/integrations/mcp-news-and-display.md) | MCP server + the one daily trigger: news-agent paragraph + Cortex Terminal 3 display (HA entity contract) |
 | [`docs/adr/`](docs/adr/) | Architecture Decision Records — the *why* behind each major choice |
 | [`config/scoring.example.yaml`](config/scoring.example.yaml) | The scoring config as the single machine-readable source of truth |
 | [`schemas/daily_report.schema.json`](schemas/daily_report.schema.json) | JSON Schema contract for the daily report output |

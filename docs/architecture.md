@@ -120,9 +120,12 @@ crisis-radar/
 │   └── reports/YYYY-MM-DD.json
 ├── schemas/
 │   └── daily_report.schema.json
+├── .mcp.json                   # registers the MCP server (house pattern, like nvda-cpi-watch)
 ├── src/crisis_radar/
 │   ├── __init__.py
 │   ├── cli.py                  # typer CLI: run / rescore / trend / backfill
+│   ├── mcp_server.py           # MCP stdio server: crisis_radar__today / __trend  (integration surface)
+│   ├── http_server.py          # optional REST mirror of the tools (house pattern)
 │   ├── config.py               # load + validate scoring.yaml, sources.yaml (pydantic)
 │   ├── domain/
 │   │   ├── models.py           # Indicator, ClusterScore, DailyReport, Signal (pydantic)
@@ -135,7 +138,8 @@ crisis-radar/
 │   │   ├── price_api.py         # structured numeric feeds (gas, oil)
 │   │   ├── store_json.py        # JSON-file report store
 │   │   ├── notify_console.py
-│   │   └── notify_telegram.py
+│   │   ├── notify_telegram.py
+│   │   └── notify_ha.py         # HomeAssistantNotifier → sensor.crisis_radar_* (drives Terminal 3)
 │   ├── application/
 │   │   └── orchestrator.py      # DailyRunOrchestrator
 │   └── reporting/
@@ -205,7 +209,7 @@ Everything left of the boundary is recorded verbatim (what was found, where). Ev
 |---|---|---|---|
 | `IndicatorSource.fetch(key) -> Indicator` | Produce one indicator's value + evidence + confidence | `LLMResearchSource` (Claude + web search) for qualitative; `PriceApiSource` for hard numbers | additional structured feeds |
 | `ReportStore.save / load / history` | Persist & retrieve daily reports | `JsonFileStore` (`data/reports/*.json`) | `SqliteStore` (if history queries grow) |
-| `Notifier.emit(report, signal_change)` | Deliver the result | `ConsoleNotifier` (stdout + markdown file) | `TelegramNotifier` (via existing Telegram infra) |
+| `Notifier.emit(report, signal_change)` | Deliver the result | `ConsoleNotifier` (stdout + markdown file); `HomeAssistantNotifier` (push `sensor.crisis_radar_*` for the display) | `TelegramNotifier` (via existing Telegram infra) |
 
 The orchestrator depends only on the ports. Swapping an adapter never touches the core.
 
@@ -254,6 +258,10 @@ Stated honestly so the implementer (and future-Leo) treat the score as a heurist
 4. **No look-ahead / backtest.** The tool scores the present from news; it does not validate that the thesis was historically predictive. Treat early output as calibration data.
 5. **Source reliability varies.** Hard numbers (gas, oil) should come from price feeds; qualitative cues (escalation level, harvest warnings) are LLM judgments over news and carry the confidence field for exactly this reason.
 
-## 13. Normalization note — "Hornmus" → "Strait of Hormuz"
+## 13. Integration surface — MCP server, news briefing, display
+
+Crisis Radar plugs into the home through **one MCP server** (`mcp` SDK stdio, house pattern like `nvda-cpi-watch`/`worker-mcp`). Its `crisis_radar__today` tool is a single daily trigger that fans out: it returns a ready-made German news paragraph to the news-agent briefing **and**, as a side effect, pushes the metrics into Home Assistant entities that the **Cortex Terminal 3** display renders. One run, two consumers, no duplicate code path. Full design, sequence, and the HA entity contract: [`integrations/mcp-news-and-display.md`](integrations/mcp-news-and-display.md) and [ADR-0007](adr/0007-mcp-server-as-integration-surface.md).
+
+## 14. Normalization note — "Hornmus" → "Strait of Hormuz"
 
 The source framework referred to a *"Hornmus-Schiffsverkehr"* blockade indicator in the fertilizer cluster, while the oil cluster separately referenced *"Hormus"* shipping insurance. These are the same chokepoint: the **Strait of Hormuz** (German *Straße von Hormus*). *"Hornmus"* is a voice-transcription artifact. Throughout this repository the indicator is standardized to **`hormuz_status`** / **Strait of Hormuz**. Flagged here so the rename is a documented decision, not a silent edit.
