@@ -1,0 +1,82 @@
+# Crisis Radar — source registry (indicator -> how to research it).
+#
+# Copy to config/sources.yaml. Routes each indicator to a source adapter and gives
+# the research layer its query hints + trusted domains. See docs/research-pipeline.md.
+#
+# source_type: price_api | llm_research
+# enum indicators MUST list allowed_values; the adapter rejects anything else (-> unknown).
+
+schema_version: "1.0"
+
+indicators:
+
+  # --- price_api: hard numbers from a feed (confidence ~1.0) ---
+  gas_ttf_eur_mwh:
+    source_type: price_api
+    feed: ttf_front_month          # implementation maps this to a concrete provider
+    unit: EUR/MWh
+  wti_usd_bbl:
+    source_type: price_api
+    feed: wti_crude
+    unit: USD/bbl
+
+  # --- llm_research: qualitative, read across many sources ---
+  product_announcements:
+    source_type: llm_research
+    query: "major AI product launches in the last 24-48h (OpenAI, Google, Meta, Nvidia, Anthropic, etc.)"
+    allowed_domains: [techcrunch.com, theverge.com, news.ycombinator.com]
+  ai_startup_funding_weekly_busd:
+    source_type: llm_research
+    query: "total disclosed AI-startup funding raised this week, in billions USD"
+    allowed_domains: [techcrunch.com, reuters.com, bloomberg.com]
+  rate_hike_signals:
+    source_type: llm_research
+    query: "ECB / Fed statements this week leaning toward rate hikes"
+    allowed_domains: [ecb.europa.eu, reuters.com, bloomberg.com]
+  tech_performance_5d_pct:
+    source_type: llm_research
+    query: "5-day performance of major tech/AI equities or a tech index, in percent"
+    allowed_domains: [cnbc.com, reuters.com, tradingview.com]
+  negative_ai_news:
+    source_type: llm_research
+    query: "negative AI news in the last 24-48h: regulation, privacy scandals, major outages"
+    allowed_domains: [reuters.com, theverge.com, techcrunch.com]
+
+  production_outages:
+    source_type: llm_research
+    query: "fertilizer / ammonia plants offline or curtailing production right now"
+    allowed_domains: [agrarheute.com, reuters.com, fao.org]
+  hormuz_status:                    # Strait of Hormuz (renamed from "Hornmus")
+    source_type: llm_research
+    query: "Strait of Hormuz shipping status — blocked or open, and for how long"
+    allowed_values: [blocked, open]
+    allowed_domains: [reuters.com, bloomberg.com]
+  harvest_forecast:
+    source_type: llm_research
+    query: "current maize/grain harvest outlook — reduction warning, neutral, or favorable"
+    allowed_values: [reduction_warning, neutral, favorable]
+    allowed_domains: [fao.org, agrarheute.com, reuters.com]
+  fertilizer_import_costs:
+    source_type: llm_research
+    query: "fertilizer import cost spikes / availability shortages reported recently"
+    allowed_domains: [agrarheute.com, fao.org, reuters.com]
+  iran_conflict_escalation:
+    source_type: llm_research
+    query: "current Iran conflict escalation level"
+    allowed_values: [low, medium, high]
+    allowed_domains: [reuters.com, bloomberg.com, swp-berlin.org]
+
+  mideast_tension:
+    source_type: llm_research
+    query: "intensity of Middle-East tension coverage right now"
+    allowed_values: [low, medium, high]
+    allowed_domains: [reuters.com, bloomberg.com]
+  refinery_outages:
+    source_type: llm_research
+    query: "oil refinery outages reported recently"
+    allowed_domains: [reuters.com, cnbc.com]
+  hormuz_insurance_rising:
+    source_type: llm_research
+    query: "are shipping/war-risk insurance premiums for the Strait of Hormuz rising"
+    allowed_values: [true, false]
+    allowed_domains: [reuters.com, bloomberg.com]

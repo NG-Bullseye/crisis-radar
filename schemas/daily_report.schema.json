@@ -1,0 +1,101 @@
+{
+  "$schema": "https://json-schema.org/draft/2020-12/schema",
+  "$id": "https://crisis-radar/schemas/daily_report.schema.json",
+  "title": "DailyReport",
+  "description": "The persisted output of one Crisis Radar daily run.",
+  "type": "object",
+  "additionalProperties": false,
+  "required": ["schema_version", "date", "clusters", "indicators", "total", "recommendation", "risk_level", "signal", "generated_at"],
+  "properties": {
+    "schema_version": {"type": "string"},
+    "date": {"type": "string", "format": "date"},
+    "total": {"type": "number", "minimum": -100, "maximum": 100},
+    "recommendation": {"type": "string", "enum": ["rotate", "half_position", "observe", "no_rotation"]},
+    "risk_level": {"type": "string", "enum": ["low", "medium", "elevated"]},
+    "summary": {"type": "string"},
+    "generated_at": {"type": "string", "format": "date-time"},
+    "clusters": {
+      "type": "array",
+      "minItems": 3,
+      "maxItems": 3,
+      "items": {"$ref": "#/$defs/clusterScore"}
+    },
+    "indicators": {
+      "type": "array",
+      "items": {"$ref": "#/$defs/indicator"}
+    },
+    "signal": {"$ref": "#/$defs/signal"}
+  },
+  "$defs": {
+    "clusterKey": {
+      "type": "string",
+      "enum": ["ai_fund_health", "fertilizer_crisis", "oil_proxy"]
+    },
+    "clusterScore": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["cluster_key", "score", "breakdown"],
+      "properties": {
+        "cluster_key": {"$ref": "#/$defs/clusterKey"},
+        "score": {"type": "number", "minimum": -100, "maximum": 100},
+        "breakdown": {
+          "type": "array",
+          "items": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": ["key", "points"],
+            "properties": {
+              "key": {"type": "string"},
+              "points": {"type": "integer"}
+            }
+          }
+        }
+      }
+    },
+    "citation": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["url", "title"],
+      "properties": {
+        "url": {"type": "string", "format": "uri"},
+        "title": {"type": "string"},
+        "published": {"type": ["string", "null"], "format": "date"}
+      }
+    },
+    "indicator": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["key", "cluster_key", "value", "value_kind", "confidence", "citations", "extracted_at"],
+      "properties": {
+        "key": {"type": "string"},
+        "cluster_key": {"$ref": "#/$defs/clusterKey"},
+        "value": {"type": ["number", "integer", "boolean", "string", "null"]},
+        "value_kind": {"type": "string", "enum": ["number", "count", "enum", "bool", "unknown"]},
+        "confidence": {"type": "number", "minimum": 0, "maximum": 1},
+        "points": {"type": ["integer", "null"]},
+        "evidence": {"type": "string"},
+        "citations": {"type": "array", "items": {"$ref": "#/$defs/citation"}},
+        "extracted_at": {"type": "string", "format": "date-time"}
+      },
+      "allOf": [
+        {
+          "comment": "A resolved (non-unknown) indicator must carry at least one citation.",
+          "if": {"properties": {"value_kind": {"not": {"const": "unknown"}}}},
+          "then": {"properties": {"citations": {"minItems": 1}}}
+        }
+      ]
+    },
+    "signal": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": ["active", "streak_days", "required_days", "threshold"],
+      "properties": {
+        "active": {"type": "boolean"},
+        "streak_days": {"type": "integer", "minimum": 0},
+        "required_days": {"type": "integer", "minimum": 1},
+        "since": {"type": ["string", "null"], "format": "date"},
+        "threshold": {"type": "number"}
+      }
+    }
+  }
+}

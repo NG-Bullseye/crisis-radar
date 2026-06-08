@@ -1,0 +1,119 @@
+# Crisis Radar — scoring configuration (single machine-readable source of truth).
+#
+# Copy to config/scoring.yaml and tune freely. Every number the engine uses lives
+# here; the engine contains NO magic numbers (ADR-0002). The doc that explains this
+# file is docs/scoring-spec.md.
+#
+# Rule types:
+#   band  : numeric value -> tiers (gt -> points, lt -> points, else 0)
+#   count : integer count * points_each, bounded by `cap`
+#   enum  : categorical value -> points (map)
+#   bool  : true -> points_true, false -> points_false
+#
+# After summing a cluster's rules, the cluster score is clamped to [-100, +100].
+
+schema_version: "1.0"
+
+clamp:
+  cluster_min: -100
+  cluster_max: 100
+
+# Optional per-cluster weights for the total. Default = equal (mean). Uncomment to
+# weight, e.g. to make oil a lighter confirmation proxy (see scoring-spec.md §7).
+total:
+  method: mean          # mean | weighted
+  weights:
+    ai_fund_health: 1.0
+    fertilizer_crisis: 1.0
+    oil_proxy: 1.0
+
+clusters:
+
+  ai_fund_health:
+    indicators:
+      product_announcements:
+        type: count
+        points_each: 5
+        cap: 40
+      ai_startup_funding_weekly_busd:
+        type: band
+        gt: {threshold: 10, points: 10}
+        lt: {threshold: 5,  points: -10}
+      rate_hike_signals:
+        type: count
+        points_each: -15
+        cap: -45
+      tech_performance_5d_pct:
+        type: band
+        gt: {threshold: 2,  points: 10}
+        lt: {threshold: -2, points: -10}
+      negative_ai_news:
+        type: count
+        points_each: -8
+        cap: -40
+
+  fertilizer_crisis:
+    indicators:
+      gas_ttf_eur_mwh:
+        type: band
+        gt: {threshold: 50, points: 20}
+        lt: {threshold: 30, points: -20}
+      production_outages:
+        type: count
+        points_each: 15
+        cap: 45
+      hormuz_status:               # renamed from "Hornmus" — Strait of Hormuz (architecture.md §13)
+        type: enum
+        values:
+          blocked: 30
+          open: -30
+      harvest_forecast:
+        type: enum
+        values:
+          reduction_warning: 10
+          neutral: 0
+          favorable: -5           # mild extension; set to 0 to match the original brief exactly
+      fertilizer_import_costs:
+        type: count
+        points_each: 12
+        cap: 36
+      iran_conflict_escalation:
+        type: enum
+        values:
+          low: -20
+          medium: 10
+          high: 40
+
+  oil_proxy:
+    indicators:
+      wti_usd_bbl:
+        type: band
+        gt: {threshold: 90, points: 25}
+        lt: {threshold: 60, points: -25}
+      mideast_tension:
+        type: enum
+        values:
+          high: 15
+          medium: 0
+          low: 0
+      refinery_outages:
+        type: count
+        points_each: 10
+        cap: 30
+      hormuz_insurance_rising:
+        type: bool
+        points_true: 12
+        points_false: 0
+
+# Total interpretation bands (evaluated top-down).
+recommendation_bands:
+  - {min: 30,   recommendation: rotate,        risk_level: elevated}   # total > 30
+  - {min: 0,    recommendation: half_position, risk_level: medium}     # 0 .. 30
+  - {min: -30,  recommendation: observe,        risk_level: low}        # -30 .. 0
+  - {min: -100, recommendation: no_rotation,    risk_level: low}        # < -30
+
+# The rotation signal: sustained pressure, not a single day (scoring-spec.md §6).
+signal:
+  rotation:
+    threshold: 30
+    consecutive_days: 15        # ~3 trading weeks
