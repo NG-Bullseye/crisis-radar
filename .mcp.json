@@ -1,0 +1,8 @@
+{
+  "mcpServers": {
+    "crisis-radar": {
+      "command": "/home/leona/repos/crisis-radar/.venv/bin/python",
+      "args": ["/home/leona/repos/crisis-radar/src/crisis_radar/mcp_server.py"]
+    }
+  }
+}
