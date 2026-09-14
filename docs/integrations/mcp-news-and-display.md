@@ -89,7 +89,7 @@ Ton wie der Rest: Anregung mit Wahrscheinlichkeit, kein Kauf-/Verkaufsbefehl.
 Wenn das Tool nicht erreichbar ist: den Block ersatzlos weglassen.
 ```
 
-**Wiring point:** the news briefing runs through Cortex's Claude path (`~/cortex/events/news.py` → bridge). That invocation must load `crisis-radar`'s `.mcp.json` (add it to the news Claude call's `--mcp-config`, or to the `cortex-claude-chat` MCP set). This is the one cross-repo touch the integration needs on the Cortex side.
+**Wiring point:** the news briefing runs through Cortex's Claude path (`~/cortex/events/news.py` → bridge — note 2026-09-15: `events/news.py` was removed in cortex `b5ed6de` (MB-612); news delivery now lives in `~/cortex/news_bot.py` + `main.py` `_news_read_tick`). That invocation must load `crisis-radar`'s `.mcp.json` (add it to the news Claude call's `--mcp-config`, or to the `cortex-claude-chat` MCP set). This is the one cross-repo touch the integration needs on the Cortex side.
 
 The returned `news_paragraph` is pre-rendered TTS-safe German (no markdown, no symbols) so it drops straight into Part 1 of the briefing and, trimmed, into the `KRISE` Telegram block.
 
