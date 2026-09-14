@@ -2,7 +2,7 @@
 
 **An LLM-assisted daily macro risk dashboard.** It tracks one concrete investment thesis — *"a fertilizer/energy supply crisis in late 2026 drives inflation and hurts AI-fund valuations"* — by researching the web every day, scoring three indicator clusters with a **deterministic, config-driven engine**, and emitting a **rotation signal** only when crisis pressure stays elevated over a sustained window.
 
-> **Status: design phase.** This repository currently contains *specifications and diagrams only* — no application code yet. The documents under [`docs/`](docs/) are the contract a follow-up implementation step (human or LLM) builds against.
+> **Status: implemented** (phases P0–P6, commit `e242d68`). Application code lives in [`src/crisis_radar/`](src/crisis_radar/) (CLI, MCP server, HTTP mirror), tests in [`tests/`](tests/). The documents under [`docs/`](docs/) are the contract the implementation builds against.
 
 > **Disclaimer.** Crisis Radar is a personal research aid, **not financial advice**. The scoring is an explicit heuristic with hand-chosen weights; every threshold lives in [`config/scoring.example.yaml`](config/scoring.example.yaml) and is meant to be tuned. The tool surfaces evidence and a number — the human decides.
 
@@ -55,7 +55,7 @@ A single day above `+30` is noise. The **rotation signal** fires only when the t
 | [`config/scoring.example.yaml`](config/scoring.example.yaml) | The scoring config as the single machine-readable source of truth |
 | [`schemas/daily_report.schema.json`](schemas/daily_report.schema.json) | JSON Schema contract for the daily report output |
 
-## Planned usage (future, once implemented)
+## Usage
 
 ```bash
 # Run today's research + scoring, write the report, check for a signal
