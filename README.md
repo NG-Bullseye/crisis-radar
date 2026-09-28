@@ -58,6 +58,8 @@ A single day above `+30` is noise. The **rotation signal** fires only when the t
 ## Usage
 
 ```bash
+./bootstrap.sh   # once: .venv + pip install -e ".[dev]", data/ (idempotent, starts nothing)
+
 # Run today's research + scoring, write the report, check for a signal
 crisis-radar run
 
@@ -66,6 +68,9 @@ crisis-radar rescore 2026-06-08
 
 # Print the trend and current signal state
 crisis-radar trend --window 15
+
+# Run the full pipeline for each missing day in a range (--end defaults to yesterday)
+crisis-radar backfill 2026-06-01 --end 2026-06-08
 ```
 
 A daily cron/systemd timer drives `crisis-radar run`; the app itself stays a stateless CLI (12-factor). See [`docs/architecture.md` § Scheduling](docs/architecture.md).
