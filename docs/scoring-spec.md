@@ -1,5 +1,9 @@
 # Scoring Specification
 
+> Stand 2026-11-10 · geprüft gegen 39dfaf2
+
+> **Status 2026-11-10 (wiki-dreamer pma#336):** Repo dormant (monitor-mcp registry.yaml crisis-radar: absicht dormant, keine Laufzeit-Evidenz seit 2026-09-15). Design-Stand 2026-06-08, nicht gegen Laufzeit nachgezogen.
+
 This is the **exact, machine-translatable** version of the scoring framework. Prose in the original brief becomes typed rules here. The runtime source of truth is [`../config/scoring.example.yaml`](../config/scoring.example.yaml); this document explains and justifies it. If the two ever disagree, the YAML wins and this doc is the bug.
 
 ## 1. Rule types

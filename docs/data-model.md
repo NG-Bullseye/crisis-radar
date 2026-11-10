@@ -1,5 +1,9 @@
 # Data Model
 
+> Stand 2026-11-10 · geprüft gegen 39dfaf2
+
+> **Status 2026-11-10 (wiki-dreamer pma#336):** Repo dormant (monitor-mcp registry.yaml crisis-radar: absicht dormant, keine Laufzeit-Evidenz seit 2026-09-15). Design-Stand 2026-06-08, nicht gegen Laufzeit nachgezogen.
+
 The contracts every layer shares. These are the pydantic models in `src/crisis_radar/domain/models.py` and the on-disk JSON shape. The authoritative output schema is [`../schemas/daily_report.schema.json`](../schemas/daily_report.schema.json).
 
 ## Entity overview

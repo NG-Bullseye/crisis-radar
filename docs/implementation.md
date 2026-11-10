@@ -1,5 +1,9 @@
 # Implementation Plan
 
+> Stand 2026-11-10 · geprüft gegen 39dfaf2
+
+> **Status 2026-11-10 (wiki-dreamer pma#336):** Repo dormant (monitor-mcp registry.yaml crisis-radar: absicht dormant, keine Laufzeit-Evidenz seit 2026-09-15). Design-Stand 2026-06-08, nicht gegen Laufzeit nachgezogen.
+
 A phased build, ordered so the **trustworthy core (deterministic scoring) ships and is tested before any LLM touches it.** Each phase has concrete deliverables and an acceptance gate; do not start a phase before the previous gate is green.
 
 ## Guiding sequencing rule

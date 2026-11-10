@@ -1,5 +1,9 @@
 # Research Pipeline
 
+> Stand 2026-11-10 · geprüft gegen 39dfaf2
+
+> **Status 2026-11-10 (wiki-dreamer pma#336):** Repo dormant (monitor-mcp registry.yaml crisis-radar: absicht dormant, keine Laufzeit-Evidenz seit 2026-09-15). Design-Stand 2026-06-08, nicht gegen Laufzeit nachgezogen.
+
 How the **fuzzy boundary** works: turning the public web into typed, cited indicators that the deterministic core can score. This is the only place an LLM operates, and it operates under strict contracts.
 
 ## Principle

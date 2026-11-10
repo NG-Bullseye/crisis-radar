@@ -1,5 +1,9 @@
 # ADR-0007 — One MCP server as the integration surface; the daily call is the trigger
 
+> Stand 2026-11-10 · geprüft gegen 39dfaf2
+
+> **Status 2026-11-10 (wiki-dreamer pma#336):** Repo dormant (monitor-mcp registry.yaml crisis-radar: absicht dormant, keine Laufzeit-Evidenz seit 2026-09-15). Design-Stand 2026-06-08, nicht gegen Laufzeit nachgezogen.
+
 - **Status:** accepted
 - **Date:** 2026-06-08
 
